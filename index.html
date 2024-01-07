@@ -11,11 +11,17 @@
 
 		<link rel="stylesheet" href="context-menu.css">
 		<script src="context-menu.js"></script>
+
+		<style>
+			html {
+				color-scheme: light dark;
+			}
+		</style>
 	</head>
 	<body>
 		<div>
 			<context-menu id="contextMenu">
-				<button is="context-menu-item" onclick="document.execCommand('selectAll')">Select all</button>
+				<button is="context-menu-item" keystroke="Ctrl+A" onclick="document.execCommand('selectAll')">Select all</button>
 				<button is="context-menu-item" onclick="alert('Lorem ipsum dolor sit amet consectetur adipisicing elit. ')">Show an alert</button>
 				<hr>
 				<button is="context-menu-item" onclick="contextMenu.parentElement.removeChild(contextMenu)">Remove the custom context menu</button>
