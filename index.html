@@ -16,13 +16,28 @@
 			html {
 				color-scheme: light dark;
 			}
+
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			#wrapper {
+				padding: 1rem;
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+			}
 		</style>
 	</head>
 	<body>
-		<div>
+		<div id="wrapper">
 			<context-menu id="contextMenu">
-				<button is="context-menu-item" keystroke="Ctrl+A" onclick="document.execCommand('selectAll')">Select all</button>
-				<button is="context-menu-item" onclick="alert('Lorem ipsum dolor sit amet consectetur adipisicing elit. ')">Show an alert</button>
+				<details is="context-menu-group">
+					<summary>Text actions</summary>
+					<button is="context-menu-item" keystroke="Ctrl+A" onclick="document.execCommand('selectAll')">Select all</button>
+					<button is="context-menu-item" onclick="wrapper.removeChild(document.querySelector('p'))">Delete a paragraph</button>
+				</details>
 				<hr>
 				<button is="context-menu-item" onclick="contextMenu.parentElement.removeChild(contextMenu)">Remove the custom context menu</button>
 			</context-menu>
