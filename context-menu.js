@@ -3,6 +3,15 @@
 // Licensed under the Apache license 2.0
 //
 
+/**
+ * A context menu itself
+ * @example
+ * <context-menu>
+ *   <button is="context-menu-item">Cut</button>
+ *   <button is="context-menu-item">Copy</button>
+ *   <button is="context-menu-item">Paste</button>
+ * </context-menu>
+ */
 class ContextMenuElement extends HTMLElement {
 	/**
 	 * Here we are going to store the parent element once the component gets mounted
@@ -23,10 +32,30 @@ class ContextMenuElement extends HTMLElement {
 
 		this.#eventListeners = {
 			onContextMenuCall: this.#onContextMenuCall.bind(this),
-			onMenuCollapsingEvent: this.#onMenuCollapsingEvent.bind(this)
+			onMenuCollapsingEvent: this.#onMenuCollapsingEvent.bind(this),
+			onKeyDown: this.#onKeyDown.bind(this)
 		}
 
-		this.addEventListener("keyup", this.#onKeyUp.bind(this))
+		this.addEventListener("keydown", this.#eventListeners.onKeyDown)
+	}
+
+	static get observedAttributes() {
+		return ["open"]
+	}
+
+	/**
+	 * @param {string} name
+	 * @param {any} _oldValue
+	 * @param {any} newValue
+	 */
+	attributeChangedCallback(name, _oldValue, newValue) {
+		if (name === "open" && newValue !== null) {
+			window.addEventListener("keydown", this.#eventListeners.onKeyDown)
+			this.removeEventListener("keydown", this.#eventListeners.onKeyDown)
+		} else {
+			window.removeEventListener("keydown", this.#eventListeners.onKeyDown)
+			this.addEventListener("keydown", this.#eventListeners.onKeyDown)
+		}
 	}
 
 	/**
@@ -63,10 +92,21 @@ class ContextMenuElement extends HTMLElement {
 	 * Gets called whenever any key has been pressed on the keyboard
 	 * @param {KeyboardEvent} event
 	 */
-	#onKeyUp(event) {
-		if (event.key === "Escape") {
+	#onKeyDown(event) {
+		if (event.key === "Tab") {
+			event.preventDefault()
+		} else if (event.key === "Escape") {
 			this.hide()
-			event.stopPropagation()
+			event.stopImmediatePropagation()
+		} else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+			event.preventDefault()
+			event.stopImmediatePropagation()
+
+			const isArrowDown = event.key === "ArrowDown"
+			const focusedElement = document.activeElement
+
+			const element = getNextChildToFocusOnInsideOf(this, focusedElement, isArrowDown)
+			element?.focus()
 		}
 	}
 
@@ -76,7 +116,7 @@ class ContextMenuElement extends HTMLElement {
 	 */
 	#onContextMenuCall(event) {
 		event.preventDefault()
-		event.stopPropagation()
+		event.stopImmediatePropagation()
 
 		if (this.contains(event.target)) {
 			return
@@ -123,6 +163,7 @@ class ContextMenuElement extends HTMLElement {
 }
 
 /**
+ * Button inside of a context menu
  * @example
  * <button is="context-menu-item">Button label</button>
  */
@@ -140,21 +181,21 @@ class ContextMenuItemElement extends HTMLButtonElement {
 	 */
 	#triggerNormalClickOnRightClick(event) {
 		event.preventDefault()
-		event.stopPropagation()
+		event.stopImmediatePropagation()
 		this.click()
 	}
 
 	#onClick() {
-		findParentOfType(ContextMenuElement, this)?.hide()
+		findParentThat(parent => parent instanceof ContextMenuElement, this)?.hide()
 	}
 }
 
 /**
  * @example
- * <dialog is="context-menu-group">
+ * <details is="context-menu-group">
  *     <summary>Group name</summary>
  *     <button is="context-menu-item">Item 1</button>
- * </dialog>
+ * </details>
  */
 class ContextMenuGroupElement extends HTMLDetailsElement {
 	/**
@@ -174,7 +215,7 @@ class ContextMenuGroupElement extends HTMLDetailsElement {
 		super()
 
 		this.addEventListener("mouseover", () => { this.open = true })
-		this.addEventListener("keyup", this.#onKeyUp.bind(this))
+		this.addEventListener("keydown", this.#onKeyDown.bind(this))
 		this.addEventListener("mouseleave", () => { this.open = false })
 
 		this.#buttonWrapper = document.createElement("div")
@@ -209,15 +250,36 @@ class ContextMenuGroupElement extends HTMLDetailsElement {
 	 * Gets called whenever any keyboard button gets pressed
 	 * @param {KeyboardEvent} event
 	 */
-	#onKeyUp(event) {
+	#onKeyDown(event) {
 		event.preventDefault()
 
-		if (!this.#open && (event.key === "Enter" || event.key === "Space")) {
-			event.stopPropagation()
-			this.open = true
-		} else if (this.#open && event.key === "Escape") {
-			event.stopPropagation()
-			this.open = false
+		if (this.open) {
+			switch (event.key) {
+				case "Escape":
+				case "ArrowLeft":
+					event.stopImmediatePropagation()
+					this.open = false
+					this.querySelector("summary")?.focus()
+					break
+				case "ArrowDown":
+				case "ArrowUp":
+					event.stopImmediatePropagation()
+					getNextChildToFocusOnInsideOf(this.#buttonWrapper, document.activeElement, event.key === "ArrowDown")?.focus()
+					break
+			}
+		} else {
+			switch (event.key) {
+				case "Enter":
+				case "Space":
+					event.stopImmediatePropagation()
+					this.open = true
+					break
+				case "ArrowRight":
+					event.stopImmediatePropagation()
+					this.open = true
+					getNextChildToFocusOnInsideOf(this.#buttonWrapper, document.activeElement, true)?.focus()
+					break
+			}
 		}
 	}
 
@@ -277,17 +339,71 @@ customElements.define("context-menu-item", ContextMenuItemElement, { extends: "b
 customElements.define("context-menu-group", ContextMenuGroupElement, { extends: "details" })
 
 /**
- * @template Class
- * @param {Class} ElementType
+ * Tries to find a parent element that meets the specified criteria
+ * @param {(parent: HTMLElement) => boolean} meetsCriteria
  * @param {HTMLElement} child
- * @returns {InstanceType<Class>|null}
+ * @returns {HTMLElement|null}
  */
-function findParentOfType(ElementType, child) {
+function findParentThat(meetsCriteria, child) {
 	let parent = child?.parentElement
 
-	while (parent && !(parent instanceof ElementType)) {
+	while (parent && !meetsCriteria(parent)) {
 		parent = parent?.parentElement
 	}
 
 	return parent
 }
+
+/**
+ * Tells if the element is focusable
+ * @param {HTMLElement} element
+ * @returns {boolean}
+ */
+function isFocusable(element) {
+	return !element.hasAttribute("disabled") && (
+		element instanceof HTMLButtonElement ||
+		element instanceof HTMLAnchorElement ||
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement ||
+		(element.getAttribute("tabindex") ?? "-1") !== "-1"
+	)
+}
+
+/**
+ * Get the next child of the context menu.
+ * Returns the top or bottom element when asking for the element
+ * after the last one or before the first one respectively
+ * @param {HTMLElement} parent
+ * @param {HTMLElement} focusedElement
+ * @param {boolean} isTheOneAfterCurrent
+ */
+function getNextChildToFocusOnInsideOf(parent, focusedElement, isTheOneAfterCurrent) {
+	let nextToFocus
+
+	if (!parent.contains(focusedElement)) {
+		nextToFocus = isTheOneAfterCurrent
+			? parent.firstElementChild
+			: parent.lastElementChild
+	} else {
+		const directChild = focusedElement.parentElement !== parent
+			? findParentThat(element => element.parentElement === parent, focusedElement)
+			: focusedElement
+
+		nextToFocus = isTheOneAfterCurrent
+			? (directChild.nextElementSibling ?? parent.firstElementChild)
+			: (directChild.previousElementSibling ?? parent.lastElementChild)
+	}
+
+	while (!(isFocusable(nextToFocus) || nextToFocus instanceof HTMLDetailsElement)) {
+		nextToFocus = isTheOneAfterCurrent
+			? (nextToFocus.nextElementSibling ?? parent.firstElementChild)
+			: (nextToFocus.previousElementSibling ?? parent.lastElementChild)
+	}
+
+	if (nextToFocus instanceof HTMLDetailsElement) {
+		return nextToFocus.querySelector("summary")
+	}
+
+	return nextToFocus
+}
+

@@ -3,7 +3,8 @@
  * Licensed under the Apache license 2.0
  */
 
-context-menu {
+context-menu,
+details[is=context-menu-group] > div {
 	--divider-color: #dadce0;
 	--border: 0.0625rem solid var(--divider-color);
 
@@ -57,7 +58,7 @@ context-menu:not([open]) {
 
 /* Context menu items */
 button[is=context-menu-item],
-context-menu details > summary {
+details[is=context-menu-group] > summary {
 	background-color: var(--background-color);
 	color: inherit;
 
@@ -82,8 +83,8 @@ context-menu details > summary {
 
 button[is=context-menu-item]:hover,
 button[is=context-menu-item]:focus,
-context-menu details:focus-within > summary,
-context-menu details:hover > summary {
+details[is=context-menu-group]:focus-within > summary,
+details[is=context-menu-group]:hover > summary {
 	background-color: var(--focused-item-background-color);
 }
 
@@ -97,46 +98,38 @@ button[is=context-menu-item]::after {
 	color: var(--keystroke-foreground-color);
 }
 
-context-menu details {
+details[is=context-menu-group] {
 	position: relative;
 }
 
-context-menu details > div {
+details[is=context-menu-group] > div {
 	position: absolute;
 	z-index: 1;
-
-	border: var(--border);
-
-	display: flex;
-	flex-direction: column;
-
-	background-color: var(--background-color);
-	box-shadow: var(--shadow);
 }
 
-context-menu details[data-x-expand-to=right] > div {
+details[is=context-menu-group][data-x-expand-to=right] > div {
 	left: 100%;
 }
 
-context-menu details[data-x-expand-to=left] > div {
+details[is=context-menu-group][data-x-expand-to=left] > div {
 	right: 100%;
 }
 
-context-menu details[data-y-expand-to=bottom] > div {
+details[is=context-menu-group][data-y-expand-to=bottom] > div {
 	top: 0;
 }
 
-context-menu details[data-y-expand-to=top] > div {
+details[is=context-menu-group][data-y-expand-to=top] > div {
 	bottom: 0;
 }
 
-context-menu details > summary::after {
+details[is=context-menu-group] > summary::after {
 	content: "⯈";
 	margin-right: -1rem;
 }
 
-[dir=rtl] context-menu details > summary::after,
-context-menu:dir(rtl) details > summary::after {
+[dir=rtl] details[is=context-menu-group] > summary::after,
+:dir(rtl) details[is=context-menu-group] > summary::after {
 	content: "⯇";
 }
 
