@@ -380,27 +380,32 @@ function isFocusable(element) {
 function getNextChildToFocusOnInsideOf(parent, focusedElement, isTheOneAfterCurrent) {
 	let nextToFocus
 
+	// If the focused element is currently outside of the menu
 	if (!parent.contains(focusedElement)) {
+		// Simply get the first or the last element
 		nextToFocus = isTheOneAfterCurrent
 			? parent.firstElementChild
 			: parent.lastElementChild
 	} else {
+		// Get the direct child of the parent instead of a probably deeply nested child
 		const directChild = focusedElement.parentElement !== parent
 			? findParentThat(element => element.parentElement === parent, focusedElement)
 			: focusedElement
 
+		// Get the next element after the direct child
 		nextToFocus = isTheOneAfterCurrent
 			? (directChild.nextElementSibling ?? parent.firstElementChild)
 			: (directChild.previousElementSibling ?? parent.lastElementChild)
 	}
 
-	while (!(isFocusable(nextToFocus) || nextToFocus instanceof HTMLDetailsElement)) {
+	// If the currently selected next element is not focusable or is not a submenu
+	while (!(isFocusable(nextToFocus) || nextToFocus instanceof ContextMenuGroupElement)) {
 		nextToFocus = isTheOneAfterCurrent
 			? (nextToFocus.nextElementSibling ?? parent.firstElementChild)
 			: (nextToFocus.previousElementSibling ?? parent.lastElementChild)
 	}
 
-	if (nextToFocus instanceof HTMLDetailsElement) {
+	if (nextToFocus instanceof ContextMenuGroupElement) {
 		return nextToFocus.querySelector("summary")
 	}
 
