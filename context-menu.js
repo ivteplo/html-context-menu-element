@@ -12,7 +12,7 @@
  *   <button is="context-menu-item">Paste</button>
  * </context-menu>
  */
-class ContextMenuElement extends HTMLElement {
+class ContextMenuElement extends HTMLMenuElement {
 	/**
 	 * Here we are going to store the parent element once the component gets mounted
 	 * so that we can remove all the event listeners once the component gets unmounted.
@@ -198,31 +198,22 @@ class ContextMenuItemElement extends HTMLButtonElement {
  * </details>
  */
 class ContextMenuGroupElement extends HTMLDetailsElement {
-	/**
-	 * Calls a callack whenever a new child gets mounted to the element
-	 * @type {MutationObserver}
-	 * @todo maybe move it out of the element for optimisation purposes?
-	 */
-	#childMountObserver
-
-	/**
-	 * Wrapper of all submenu items
-	 * @type {HTMLDivElement}
-	 */
-	#buttonWrapper
-
 	constructor() {
 		super()
 
 		this.addEventListener("mouseover", () => { this.open = true })
 		this.addEventListener("keydown", this.#onKeyDown.bind(this))
 		this.addEventListener("mouseleave", () => { this.open = false })
+	}
 
-		this.#buttonWrapper = document.createElement("div")
-		this.appendChild(this.#buttonWrapper)
+	#_buttonWrapper
 
-		this.#childMountObserver = new MutationObserver(this.#onMutations.bind(this))
-		this.#childMountObserver.observe(this, { childList: true })
+	get #buttonWrapper() {
+		if (!this.#_buttonWrapper) {
+			this.#_buttonWrapper = this.querySelector("menu")
+		}
+
+		return this.#_buttonWrapper
 	}
 
 	static get observedAttributes() {
@@ -309,32 +300,9 @@ class ContextMenuGroupElement extends HTMLDetailsElement {
 		this.removeAttribute("data-x-expand-to")
 		this.removeAttribute("data-y-expand-to")
 	}
-
-	/**
-	 * Gets called whenever a child gets mounted
-	 * @param {MutationRecord[]} mutations
-	 */
-	#onMutations(mutations) {
-		for (const mutation of mutations) {
-			if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-				for (const node of mutation.addedNodes) {
-					if (!(node instanceof HTMLElement)) {
-						continue
-					}
-
-					if (node.tagName === "SUMMARY") {
-						continue
-					}
-
-					this.removeChild(node)
-					this.#buttonWrapper.appendChild(node)
-				}
-			}
-		}
-	}
 }
 
-customElements.define("context-menu", ContextMenuElement)
+customElements.define("context-menu", ContextMenuElement, { extends: "menu" })
 customElements.define("context-menu-item", ContextMenuItemElement, { extends: "button" })
 customElements.define("context-menu-group", ContextMenuGroupElement, { extends: "details" })
 

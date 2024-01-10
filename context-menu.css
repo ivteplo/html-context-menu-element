@@ -3,8 +3,8 @@
  * Licensed under the Apache license 2.0
  */
 
-context-menu,
-details[is=context-menu-group] > div {
+menu[is=context-menu],
+details[is=context-menu-group] > menu {
 	--divider-color: #dadce0;
 	--border: 0.0625rem solid var(--divider-color);
 
@@ -37,7 +37,7 @@ details[is=context-menu-group] > div {
 	box-shadow: var(--shadow);
 }
 
-context-menu:not([open]) {
+menu[is=context-menu]:not([open]) {
 	display: none;
 }
 
@@ -102,24 +102,24 @@ details[is=context-menu-group] {
 	position: relative;
 }
 
-details[is=context-menu-group] > div {
+details[is=context-menu-group] > menu {
 	position: absolute;
 	z-index: 1;
 }
 
-details[is=context-menu-group][data-x-expand-to=right] > div {
+details[is=context-menu-group][data-x-expand-to=right] > menu {
 	left: 100%;
 }
 
-details[is=context-menu-group][data-x-expand-to=left] > div {
+details[is=context-menu-group][data-x-expand-to=left] > menu {
 	right: 100%;
 }
 
-details[is=context-menu-group][data-y-expand-to=bottom] > div {
+details[is=context-menu-group][data-y-expand-to=bottom] > menu {
 	top: 0;
 }
 
-details[is=context-menu-group][data-y-expand-to=top] > div {
+details[is=context-menu-group][data-y-expand-to=top] > menu {
 	bottom: 0;
 }
 
@@ -134,7 +134,7 @@ details[is=context-menu-group] > summary::after {
 }
 
 /* Item separator*/
-context-menu hr {
+menu[is=context-menu] hr {
 	display: block;
 	border: none;
 
