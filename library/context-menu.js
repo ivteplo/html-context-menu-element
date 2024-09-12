@@ -3,16 +3,19 @@
 // Licensed under the Apache license 2.0
 //
 
+import { findParentThat, getNextChildToFocusOnInsideOf } from "./helpers.js"
+import "./context-menu.css"
+
 /**
  * A context menu itself
  * @example
- * <context-menu>
+ * <menu is="context-menu">
  *   <button is="context-menu-item">Cut</button>
  *   <button is="context-menu-item">Copy</button>
  *   <button is="context-menu-item">Paste</button>
- * </context-menu>
+ * </menu>
  */
-class ContextMenuElement extends HTMLMenuElement {
+export class ContextMenuElement extends HTMLMenuElement {
 	/**
 	 * Here we are going to store the parent element once the component gets mounted
 	 * so that we can remove all the event listeners once the component gets unmounted.
@@ -39,11 +42,15 @@ class ContextMenuElement extends HTMLMenuElement {
 		this.addEventListener("keydown", this.#eventListeners.onKeyDown)
 	}
 
+	/**
+	 * @ignore
+	 */
 	static get observedAttributes() {
 		return ["open"]
 	}
 
 	/**
+	 * @ignore
 	 * @param {string} name
 	 * @param {any} _oldValue
 	 * @param {any} newValue
@@ -137,6 +144,9 @@ class ContextMenuElement extends HTMLMenuElement {
 		}
 	}
 
+	/**
+	 * @ignore
+	 */
 	connectedCallback() {
 		window.addEventListener("mousedown", this.#eventListeners.onMenuCollapsingEvent)
 		window.addEventListener("contextmenu", this.#eventListeners.onMenuCollapsingEvent)
@@ -150,6 +160,9 @@ class ContextMenuElement extends HTMLMenuElement {
 		this.hide()
 	}
 
+	/**
+	 * @ignore
+	 */
 	disconnectedCallback() {
 		window.removeEventListener("mousedown", this.#eventListeners.onMenuCollapsingEvent)
 		window.removeEventListener("contextmenu", this.#eventListeners.onMenuCollapsingEvent)
@@ -167,7 +180,7 @@ class ContextMenuElement extends HTMLMenuElement {
  * @example
  * <button is="context-menu-item">Button label</button>
  */
-class ContextMenuItemElement extends HTMLButtonElement {
+export class ContextMenuItemElement extends HTMLButtonElement {
 	constructor() {
 		super()
 		this.type = "button"
@@ -197,7 +210,7 @@ class ContextMenuItemElement extends HTMLButtonElement {
  *     <button is="context-menu-item">Item 1</button>
  * </details>
  */
-class ContextMenuGroupElement extends HTMLDetailsElement {
+export class ContextMenuGroupElement extends HTMLDetailsElement {
 	constructor() {
 		super()
 
@@ -216,11 +229,15 @@ class ContextMenuGroupElement extends HTMLDetailsElement {
 		return this.#_buttonWrapper
 	}
 
+	/**
+	 * @ignore
+	 */
 	static get observedAttributes() {
 		return ["open"]
 	}
 
 	/**
+	 * @ignore
 	 * Method that gets called whenever the 'open' attribute changes
 	 * (list of observed attributes is specified in the static method `observedAttributes`)
 	 * @param {string} name
@@ -305,78 +322,3 @@ class ContextMenuGroupElement extends HTMLDetailsElement {
 customElements.define("context-menu", ContextMenuElement, { extends: "menu" })
 customElements.define("context-menu-item", ContextMenuItemElement, { extends: "button" })
 customElements.define("context-menu-group", ContextMenuGroupElement, { extends: "details" })
-
-/**
- * Tries to find a parent element that meets the specified criteria
- * @param {(parent: HTMLElement) => boolean} meetsCriteria
- * @param {HTMLElement} child
- * @returns {HTMLElement|null}
- */
-function findParentThat(meetsCriteria, child) {
-	let parent = child?.parentElement
-
-	while (parent && !meetsCriteria(parent)) {
-		parent = parent?.parentElement
-	}
-
-	return parent
-}
-
-/**
- * Tells if the element is focusable
- * @param {HTMLElement} element
- * @returns {boolean}
- */
-function isFocusable(element) {
-	return !element.hasAttribute("disabled") && (
-		element instanceof HTMLButtonElement ||
-		element instanceof HTMLAnchorElement ||
-		element instanceof HTMLInputElement ||
-		element instanceof HTMLTextAreaElement ||
-		(element.getAttribute("tabindex") ?? "-1") !== "-1"
-	)
-}
-
-/**
- * Get the next child of the context menu.
- * Returns the top or bottom element when asking for the element
- * after the last one or before the first one respectively
- * @param {HTMLElement} parent
- * @param {HTMLElement} focusedElement
- * @param {boolean} isTheOneAfterCurrent
- */
-function getNextChildToFocusOnInsideOf(parent, focusedElement, isTheOneAfterCurrent) {
-	let nextToFocus
-
-	// If the focused element is currently outside of the menu
-	if (!parent.contains(focusedElement)) {
-		// Simply get the first or the last element
-		nextToFocus = isTheOneAfterCurrent
-			? parent.firstElementChild
-			: parent.lastElementChild
-	} else {
-		// Get the direct child of the parent instead of a probably deeply nested child
-		const directChild = focusedElement.parentElement !== parent
-			? findParentThat(element => element.parentElement === parent, focusedElement)
-			: focusedElement
-
-		// Get the next element after the direct child
-		nextToFocus = isTheOneAfterCurrent
-			? (directChild.nextElementSibling ?? parent.firstElementChild)
-			: (directChild.previousElementSibling ?? parent.lastElementChild)
-	}
-
-	// If the currently selected next element is not focusable or is not a submenu
-	while (!(isFocusable(nextToFocus) || nextToFocus instanceof ContextMenuGroupElement)) {
-		nextToFocus = isTheOneAfterCurrent
-			? (nextToFocus.nextElementSibling ?? parent.firstElementChild)
-			: (nextToFocus.previousElementSibling ?? parent.lastElementChild)
-	}
-
-	if (nextToFocus instanceof ContextMenuGroupElement) {
-		return nextToFocus.querySelector("summary")
-	}
-
-	return nextToFocus
-}
-

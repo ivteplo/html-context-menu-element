@@ -1,0 +1,46 @@
+{
+  "name": "@ivteplo/html-context-menu-element",
+  "description": "An HTML custom element, designed to let you quickly create an easily-customizable context menu.",
+  "author": "Ivan Teplov <iteplov7@gmail.com>",
+  "license": "Apache-2.0",
+  "version": "1.0.0-alpha",
+  "type": "module",
+  "files": [
+    "build",
+    "documentation/*.md"
+  ],
+  "main": "./build/index.umd.cjs",
+  "module": "./build/index.js",
+  "styles": "./build/index.css",
+  "exports": {
+    ".": {
+      "require": "./build/index.umd.cjs",
+      "import": "./build/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite --config test/vite.config.js",
+    "build": "vite build --config vite.config.js",
+    "docs:api": "deno run -A https://raw.githubusercontent.com/ivteplo/deno-markdown-docs/v1.0.0-alpha/main.js ./library/index.js -o ./documentation/API.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivteplo/context-menu.git"
+  },
+  "keywords": [
+    "context-menu",
+    "custom-element",
+    "html-custom-element",
+    "html",
+    "web-components-api",
+    "web-components",
+    "cross-framework"
+  ],
+  "bugs": {
+    "url": "https://github.com/ivteplo/context-menu/issues"
+  },
+  "homepage": "https://github.com/ivteplo/context-menu#readme",
+  "devDependencies": {
+    "vite": "^5.4.4"
+  }
+}
