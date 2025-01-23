@@ -21,7 +21,8 @@
   "scripts": {
     "dev": "vite --config test/vite.config.js",
     "build": "vite build --config vite.config.js",
-    "docs:api": "deno run -A https://raw.githubusercontent.com/ivteplo/deno-markdown-docs/v1.0.0-alpha/main.js ./library/index.js -o ./documentation/API.md"
+    "docs:api": "deno run -A https://raw.githubusercontent.com/ivteplo/deno-markdown-docs/v1.0.0-alpha/main.js ./library/index.js -o ./documentation/API.md",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
   },
   "homepage": "https://github.com/ivteplo/context-menu#readme",
   "devDependencies": {
+    "husky": "^9.1.7",
     "sass": "^1.83.4",
     "vite": "^5.4.4"
   }

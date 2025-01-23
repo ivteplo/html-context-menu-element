@@ -3,7 +3,7 @@
 A context menu itself
 
 <details open>
-<summary><b>Example</b></summary>
+<summary><b>Example:</b> Define a context menu</summary>
 
 ```jsx
 <menu is="context-menu" id="my-context-menu">
@@ -11,6 +11,17 @@ A context menu itself
   <button is="context-menu-item">Copy</button>
   <button is="context-menu-item">Paste</button>
 </menu>
+```
+
+</details>
+
+<details open>
+<summary><b>Example:</b> Apply the context menu to an element</summary>
+
+```jsx
+<div data-context-menu="my-context-menu">
+  This element is using a custom context menu.
+</div>
 ```
 
 </details>
