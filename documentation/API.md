@@ -36,7 +36,7 @@ ContextMenuElement.defineAs("context-menu")
 Hide the context menu
 
 
-## `show(x: number, y: number): void`
+## `show(x: number, y: number): unknown`
 
 Displays the context menu near the specified location
 
@@ -108,7 +108,7 @@ ContextMenuGroupElement.defineAs("context-menu-group")
 
 
 
-# `defineElements(baseName: string): void`
+# `defineElements(): void`
 
 Helper method to define all required components in the HTML custom element registry.
 
@@ -117,10 +117,11 @@ Helper method to define all required components in the HTML custom element regis
 
 ```jsx
 import { defineElements } from "@ivteplo/html-context-menu-element"
+
 // will define <menu is="context-menu">,
 //             <button is="context-menu-item">,
 // 		      and <details is="context-menu-group">
-defineElements("context-menu")
+defineElements()
 ```
 
 </details>

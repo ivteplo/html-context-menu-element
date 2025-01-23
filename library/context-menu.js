@@ -5,15 +5,21 @@
 
 import { getNextChildToFocusOnInsideOf } from "./helpers.js"
 import "./context-menu.scss"
+import { startObserver } from "./click-observer.js"
 
 /**
  * A context menu itself
- * @example
+ * @example <caption>Define a context menu</caption>
  * <menu is="context-menu" id="my-context-menu">
  *   <button is="context-menu-item">Cut</button>
  *   <button is="context-menu-item">Copy</button>
  *   <button is="context-menu-item">Paste</button>
  * </menu>
+ *
+ * @example <caption>Apply the context menu to an element</caption>
+ * <div data-context-menu="my-context-menu">
+ *   This element is using a custom context menu.
+ * </div>
  */
 export class ContextMenuElement extends HTMLMenuElement {
 	/**
@@ -28,13 +34,6 @@ export class ContextMenuElement extends HTMLMenuElement {
 	}
 
 	/**
-	 * Here we are going to store the parent element once the component gets mounted
-	 * so that we can remove all the event listeners once the component gets unmounted.
-	 * @type {HTMLElement|null}
-	 */
-	#lastParent = null
-
-	/**
 	 * Object with event listeners with `this`-bindings.
 	 * We need it, because binding `this` returns a new function,
 	 * but we need to be able to remove an event listener
@@ -46,7 +45,6 @@ export class ContextMenuElement extends HTMLMenuElement {
 
 		this.#eventListeners = {
 			onContextMenuCall: this.#onContextMenuCall.bind(this),
-			onMenuCollapsingEvent: this.#onMenuCollapsingEvent.bind(this),
 			onKeyDown: this.#onKeyDown.bind(this)
 		}
 
@@ -81,6 +79,8 @@ export class ContextMenuElement extends HTMLMenuElement {
 	 */
 	hide() {
 		this.removeAttribute("open")
+		this.style.top = ""
+		this.style.left = ""
 	}
 
 	/**
@@ -89,6 +89,13 @@ export class ContextMenuElement extends HTMLMenuElement {
 	 * @param {number} y - vertical click location
 	 */
 	show(x, y) {
+		if (typeof x !== "number" || typeof y !== "number") {
+			return console.warn(
+				"Invalid coordinates passed to the %s#show(x, y) method: (%s, %s).",
+				this.constructor.name, x, y
+			)
+		}
+
 		this.setAttribute("open", true)
 
 		if (y + this.clientHeight > window.innerHeight) {
@@ -129,30 +136,12 @@ export class ContextMenuElement extends HTMLMenuElement {
 	}
 
 	/**
-	 * Gets called when the right button or a context menu keyboard button is clicked inside the parent element
+	 * Gets called when the right button is clicked inside the context menu
 	 * @param {PointerEvent} event
 	 */
 	#onContextMenuCall(event) {
 		event.preventDefault()
 		event.stopImmediatePropagation()
-
-		if (this.contains(event.target)) {
-			return
-		}
-
-		this.show(event.clientX, event.clientY)
-	}
-
-	/**
-	 * Gets called whenever there is an interaction that should dismiss the context menu
-	 * @param {PointerEvent} event
-	 */
-	#onMenuCollapsingEvent(event) {
-		if (event.type !== "mousedown" || !this?.contains(event.target)) {
-			this.hide()
-			this.style.top = ""
-			this.style.left = ""
-		}
 	}
 
 	/**
@@ -160,31 +149,13 @@ export class ContextMenuElement extends HTMLMenuElement {
 	 */
 	connectedCallback() {
 		this.hide()
-
-		window.addEventListener("mousedown", this.#eventListeners.onMenuCollapsingEvent)
-		window.addEventListener("contextmenu", this.#eventListeners.onMenuCollapsingEvent)
-		window.addEventListener("scroll", this.#eventListeners.onMenuCollapsingEvent)
-		window.addEventListener("blur", this.#eventListeners.onMenuCollapsingEvent)
-		window.addEventListener("resize", this.#eventListeners.onMenuCollapsingEvent)
-
-		this.parentElement.addEventListener("contextmenu", this.#eventListeners.onContextMenuCall)
-		this.#lastParent = this.parentElement
-
-		this.hide()
+		this.addEventListener("contextmenu", this.#onContextMenuCall)
+		startObserver()
 	}
 
 	/**
 	 * @ignore
 	 */
-	disconnectedCallback() {
-		window.removeEventListener("mousedown", this.#eventListeners.onMenuCollapsingEvent)
-		window.removeEventListener("contextmenu", this.#eventListeners.onMenuCollapsingEvent)
-		window.removeEventListener("scroll", this.#eventListeners.onMenuCollapsingEvent)
-		window.removeEventListener("blur", this.#eventListeners.onMenuCollapsingEvent)
-		window.removeEventListener("resize", this.#eventListeners.onMenuCollapsingEvent)
-
-		this.#lastParent?.removeEventListener("contextmenu", this.#eventListeners.onContextMenuCall)
-		this.#lastParent = null
-	}
+	disconnectedCallback() {}
 }
 
