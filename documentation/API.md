@@ -82,8 +82,10 @@ Element that represents buttons hidden under a dropdown in a context menu.
 ```jsx
 <details is="context-menu-group">
     <summary>Group name</summary>
-    <button is="context-menu-item">Item 1</button>
-    <button is="context-menu-item">Item 2</button>
+    <menu>
+        <button is="context-menu-item">Item 1</button>
+        <button is="context-menu-item">Item 2</button>
+    </menu>
 </details>
 ```
 

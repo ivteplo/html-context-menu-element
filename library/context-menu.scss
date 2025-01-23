@@ -1,0 +1,166 @@
+/**
+ * Copyright (c) 2024-2025 Ivan Teplov
+ * Licensed under the Apache license 2.0
+ */
+
+menu[is=context-menu] {
+	--divider-color: #dadce0;
+	--border: 0.0625rem solid var(--divider-color);
+
+	--shadow-color: #8e8e8e;
+	--shadow: 0.125rem 0.125rem 0.125rem var(--focused-item-color);
+
+	--focused-item-background-color: #e8e8e9;
+	--disabled-item-color: #5f6368;
+
+	--keystroke-foreground-color: #5f6368;
+	--foreground-color: #202124;
+	--arrow-color: #626365;
+
+	--background-color: white;
+
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 0.78rem;
+
+	@media (prefers-color-scheme: dark) {
+		--divider-color: #3c4043;
+
+		--focused-item-background-color: #3f4042;
+		--disabled-item-foreground-color: #9aa0a6;
+
+		--keystroke-foreground-color: #9aa0a6;
+		--foreground-color: #dceaed;
+		--arrow-color: #acaeb1;
+
+		--background-color: #292a2d;
+	}
+}
+
+@mixin menu {
+	background-color: var(--background-color);
+	color: var(--foreground-color);
+
+	display: flex;
+	flex-direction: column;
+
+	border: var(--border);
+	padding: 0.125rem;
+	box-shadow: var(--shadow);
+}
+
+menu[is=context-menu] {
+	@include menu();
+	position: fixed;
+
+	&:not([open]) {
+		display: none;
+	}
+
+	/* Item separator*/
+	& hr {
+		display: block;
+		border: none;
+
+		height: 0.0625rem;
+		justify-self: stretch;
+		background-color: var(--divider-color);
+
+		margin: 0.1875rem 0.125rem;
+	}
+}
+
+@mixin button {
+	background-color: var(--background-color);
+	color: inherit;
+
+	display: flex;
+	text-align: left;
+	justify-content: space-between;
+
+	gap: 3rem;
+	padding: 0.25rem 2rem;
+
+	cursor: pointer;
+
+	user-select: none;
+
+	border: none;
+	outline: none;
+
+	font: inherit;
+
+	white-space: nowrap;
+}
+
+@mixin button-hover {
+	background-color: var(--focused-item-background-color);
+}
+
+button[is=context-menu-item] {
+	@include button();
+
+	&::after {
+		content: attr(keystroke);
+		margin-left: auto;
+		color: var(--keystroke-foreground-color);
+	}
+
+	&:hover,
+	&:focus {
+		@include button-hover();
+	}
+
+	&:disabled {
+		color: var(--disabled-item-foreground-color);
+	}
+}
+
+details[is=context-menu-group] {
+	position: relative;
+
+	& > summary {
+		@include button();
+
+		&::after {
+			content: "⯈";
+			margin-right: -1rem;
+
+			[dir=rtl] &,
+			:dir(rtl) & {
+				content: "⯇";
+			}
+		}
+
+		&:hover {
+			@include button-hover();
+		}
+	}
+
+	&:focus-within > summary {
+		@include button-hover();
+	}
+
+	& > menu {
+		@include menu();
+
+		position: absolute;
+		z-index: 1;
+	}
+
+	&[data-x-expand-to=right] > menu {
+		left: 100%;
+	}
+
+	&[data-x-expand-to=left] > menu {
+		right: 100%;
+	}
+
+	&[data-y-expand-to=bottom] > menu {
+		top: 0;
+	}
+
+	&[data-y-expand-to=top] > menu {
+		bottom: 0;
+	}
+}
+

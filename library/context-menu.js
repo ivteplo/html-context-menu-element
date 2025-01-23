@@ -4,7 +4,7 @@
 //
 
 import { getNextChildToFocusOnInsideOf } from "./helpers.js"
-import "./context-menu.css"
+import "./context-menu.scss"
 
 /**
  * A context menu itself

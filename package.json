@@ -41,6 +41,7 @@
   },
   "homepage": "https://github.com/ivteplo/context-menu#readme",
   "devDependencies": {
+    "sass": "^1.83.4",
     "vite": "^5.4.4"
   }
 }

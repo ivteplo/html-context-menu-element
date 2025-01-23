@@ -10,8 +10,10 @@ import { getNextChildToFocusOnInsideOf } from "./helpers.js"
  * @example
  * <details is="context-menu-group">
  *     <summary>Group name</summary>
- *     <button is="context-menu-item">Item 1</button>
- *     <button is="context-menu-item">Item 2</button>
+ *     <menu>
+ *         <button is="context-menu-item">Item 1</button>
+ *         <button is="context-menu-item">Item 2</button>
+ *     </menu>
  * </details>
  */
 export class ContextMenuGroupElement extends HTMLDetailsElement {
