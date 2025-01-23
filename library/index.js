@@ -15,15 +15,16 @@ export {
 
 /**
  * Helper method to define all required components in the HTML custom element registry.
- * @param {string} baseName — Base component name. It will be used to define the menu element itself and as a prefix for the child components.
  * @example
  * import { defineElements } from "@ivteplo/html-context-menu-element"
+ *
  * // will define <menu is="context-menu">,
  * //             <button is="context-menu-item">,
  * // 		      and <details is="context-menu-group">
- * defineElements("context-menu")
+ * defineElements()
  */
-export function defineElements(baseName) {
+export function defineElements() {
+	const baseName = "context-menu"
 	ContextMenuElement.defineAs(baseName)
 	ContextMenuItemElement.defineAs(`${baseName}-item`)
 	ContextMenuGroupElement.defineAs(`${baseName}-group`)
