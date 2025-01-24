@@ -17,14 +17,15 @@ npm install @ivteplo/html-context-menu-element
 
 Or you can import it dynamically from a CDN:
 ```javascript
-const { defineElements } = await import("https://unpkg.com/@ivteplo/html-context-menu-element@1.1.0-alpha/build/index.js")
+const { defineElements } = await import("https://unpkg.com/@ivteplo/html-context-menu-element@1.1.0-alpha.1/build/index.js")
 ```
 
 
 ## Usage
-First, we need to define the components in the custom element registry:
+First, we need to define the components in the custom element registry and import the default stylesheet:
 ```javascript
-import { defineElements } from "@ivtepl/html-context-menu-element"
+import { defineElements } from "@ivteplo/html-context-menu-element"
+import "@ivteplo/html-context-menu-element/index.css"
 defineElements()
 ```
 

@@ -3,7 +3,7 @@
   "description": "An HTML custom element, designed to let you quickly create an easily-customizable context menu.",
   "author": "Ivan Teplov <iteplov7@gmail.com>",
   "license": "Apache-2.0",
-  "version": "1.1.0-alpha",
+  "version": "1.1.0-alpha.1",
   "type": "module",
   "files": [
     "build",
@@ -12,11 +12,14 @@
   "main": "./build/index.umd.cjs",
   "module": "./build/index.js",
   "styles": "./build/index.css",
+  "style": "./build/index.css",
+  "sass": "./build/index.css",
   "exports": {
     ".": {
       "require": "./build/index.umd.cjs",
       "import": "./build/index.js"
-    }
+    },
+    "./index.css": "./build/index.css"
   },
   "scripts": {
     "dev": "vite --config test/vite.config.js",
