@@ -12,6 +12,10 @@ export const observer = new MutationObserver(mutations => {
 		.filter(mutation => mutation.type === "attributes")
 		.filter(mutation => mutation.attributeName === contextMenuAttribute)
 		.forEach(mutation => handleMutation(mutation))
+
+	mutations
+		.filter(mutation => mutation.type === "childList")
+		.forEach(mutation => handleMutation(mutation))
 })
 
 export const startObserver = () => {
@@ -30,6 +34,8 @@ export const startObserver = () => {
 	observer.observe(document.body, {
 		attributes: true,
 		subtree: true,
+		attributeFilter: [contextMenuAttribute],
+		childList: true,
 	})
 }
 
@@ -39,10 +45,28 @@ export const startObserver = () => {
 function handleMutation(mutation) {
 	if (!(mutation.target instanceof HTMLElement)) return
 
-	if (mutation.target.getAttribute(contextMenuAttribute) !== "") {
-		mutation.target.addEventListener("contextmenu", openContextMenuOnClick)
+	if (mutation.type === "attributes") {
+		return handleElement(mutation.target)
+	}
+
+	mutation.addedNodes.forEach(node => {
+		if (!(node instanceof HTMLElement)) return
+
+		handleElement(node)
+
+		const childrenWithCustomContextMenu = node.querySelectorAll(`[${contextMenuAttribute}]`)
+		childrenWithCustomContextMenu.forEach(handleElement)
+	})
+}
+
+/**
+ * @param {HTMLElement} element
+ */
+function handleElement(element) {
+	if (element.getAttribute(contextMenuAttribute) !== "") {
+		element.addEventListener("contextmenu", openContextMenuOnClick)
 	} else {
-		mutation.target.removeEventListener("contextmenu", openContextMenuOnClick)
+		element.removeEventListener("contextmenu", openContextMenuOnClick)
 	}
 }
 
