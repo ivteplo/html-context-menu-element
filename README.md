@@ -17,7 +17,7 @@ npm install @ivteplo/html-context-menu-element
 
 Or you can import it dynamically from a CDN:
 ```javascript
-const { defineElements } = await import("https://unpkg.com/@ivteplo/html-context-menu-element@1.1.0-alpha.1/build/index.js")
+const { defineElements } = await import("https://unpkg.com/@ivteplo/html-context-menu-element@1.1.0-alpha.3/build/index.js")
 ```
 
 
