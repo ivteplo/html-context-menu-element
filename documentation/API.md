@@ -42,14 +42,28 @@ ContextMenuElement.defineAs("context-menu")
 </details>
 
 
+## `get currentTarget(): HTMLElement|null`
+
+Container that has `data-context-menu` set
+and that has been right clicked on.
+
+
+## `get target(): HTMLElement|null`
+
+Object that has been right clicked on.
+Can be a child of a container that has the `data-context-menu` set.
+
+
 ## `hide(): void`
 
 Hide the context menu
 
 
-## `show(x: number, y: number): unknown`
+## `show(x: number, y: number, undefined = [UNSUPPORTED]): unknown`
 
 Displays the context menu near the specified location
+
+**unsupported**:
 
 
 

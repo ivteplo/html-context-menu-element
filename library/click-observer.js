@@ -3,19 +3,12 @@
 // Licensed under the Apache license 2.0
 //
 
-import { ContextMenuElement } from "./context-menu"
+import { ContextMenuElement } from "./context-menu.js"
 
 export const contextMenuAttribute = "data-context-menu"
 
 export const observer = new MutationObserver(mutations => {
-	mutations
-		.filter(mutation => mutation.type === "attributes")
-		.filter(mutation => mutation.attributeName === contextMenuAttribute)
-		.forEach(mutation => handleMutation(mutation))
-
-	mutations
-		.filter(mutation => mutation.type === "childList")
-		.forEach(mutation => handleMutation(mutation))
+	mutations.forEach(handleMutation)
 })
 
 export const startObserver = () => {
@@ -63,10 +56,10 @@ function handleMutation(mutation) {
  * @param {HTMLElement} element
  */
 function handleElement(element) {
+	element.removeEventListener("contextmenu", openContextMenuOnClick)
+
 	if (element.getAttribute(contextMenuAttribute) !== "") {
 		element.addEventListener("contextmenu", openContextMenuOnClick)
-	} else {
-		element.removeEventListener("contextmenu", openContextMenuOnClick)
 	}
 }
 
@@ -76,7 +69,7 @@ function handleElement(element) {
  * @param {PointerEvent} event
  */
 function openContextMenuOnClick(event) {
-	if (!event.currentTarget instanceof HTMLElement) return
+	if (!(event.currentTarget instanceof HTMLElement)) return
 
 	const contextMenuID = event.currentTarget.getAttribute(contextMenuAttribute)
 
@@ -91,7 +84,10 @@ function openContextMenuOnClick(event) {
 
 	if (contextMenu.contains(event.target)) return
 
-	contextMenu.show(event.clientX, event.clientY)
+	contextMenu.show(event.clientX, event.clientY, {
+		currentTarget: event.currentTarget,
+		target: event.target
+	})
 }
 
 /**

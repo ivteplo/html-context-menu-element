@@ -4,8 +4,8 @@
 //
 
 import { getNextChildToFocusOnInsideOf } from "./helpers.js"
-import "./context-menu.scss"
 import { startObserver } from "./click-observer.js"
+import "./context-menu.scss"
 
 /**
  * A context menu itself
@@ -33,6 +33,30 @@ export class ContextMenuElement extends HTMLMenuElement {
 		customElements.define(tag, this, { extends: "menu" })
 	}
 
+	/** @type {HTMLElement | null} */
+	#currentTarget = null
+
+	/** @type {HTMLElement | null} */
+	#target = null
+
+	/**
+	 * Container that has `data-context-menu` set
+	 * and that has been right clicked on.
+	 * @returns {HTMLElement|null}
+	 */
+	get currentTarget() {
+		return this.#currentTarget
+	}
+
+	/**
+	 * Object that has been right clicked on.
+	 * Can be a child of a container that has the `data-context-menu` set.
+	 * @returns {HTMLElement|null}
+	 */
+	get target() {
+		return this.#target
+	}
+
 	/**
 	 * Object with event listeners with `this`-bindings.
 	 * We need it, because binding `this` returns a new function,
@@ -45,7 +69,7 @@ export class ContextMenuElement extends HTMLMenuElement {
 
 		this.#eventListeners = {
 			onContextMenuCall: this.#onContextMenuCall.bind(this),
-			onKeyDown: this.#onKeyDown.bind(this)
+			onKeyDown: this.#onKeyDown.bind(this),
 		}
 
 		this.addEventListener("keydown", this.#eventListeners.onKeyDown)
@@ -87,13 +111,25 @@ export class ContextMenuElement extends HTMLMenuElement {
 	 * Displays the context menu near the specified location
 	 * @param {number} x - horizontal click location
 	 * @param {number} y - vertical click location
+	 * @param {{
+	 *   currentTarget?: HTMLElement,
+	 *   target?: HTMLElement
+	 * }} - objects that triggered the context menu (optional)
 	 */
-	show(x, y) {
+	show(x, y, { target, currentTarget } = {}) {
 		if (typeof x !== "number" || typeof y !== "number") {
 			return console.warn(
 				"Invalid coordinates passed to the %s#show(x, y) method: (%s, %s).",
 				this.constructor.name, x, y
 			)
+		}
+
+		if (currentTarget instanceof HTMLElement) {
+			this.#currentTarget = currentTarget
+		}
+
+		if (target instanceof HTMLElement) {
+			this.#target = target
 		}
 
 		this.setAttribute("open", true)
@@ -142,14 +178,30 @@ export class ContextMenuElement extends HTMLMenuElement {
 	#onContextMenuCall(event) {
 		event.preventDefault()
 		event.stopImmediatePropagation()
+
+		// Make the right click work like the left click
+		// when performing it on a button inside the context menu.
+		if (event.target instanceof HTMLButtonElement) {
+			event.target.click()
+		}
 	}
 
 	/**
-	 * @ignore
+	 * Gets called when a click inside of the context menu has been performed.
+	 * @param {PointerEvent} event
 	 */
+	#onClick(event) {
+		// By default we want to close the context menu once a button has been clicked.
+		if (!event.defaultPrevented && event.target instanceof HTMLButtonElement) {
+			this.hide()
+		}
+	}
+
+	/** @ignore */
 	connectedCallback() {
 		this.hide()
 		this.addEventListener("contextmenu", this.#onContextMenuCall)
+		this.addEventListener("click", this.#onClick)
 		startObserver()
 	}
 

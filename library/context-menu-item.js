@@ -3,9 +3,6 @@
 // Licensed under the Apache license 2.0
 //
 
-import { ContextMenuElement } from "./context-menu.js"
-import { findParentThat } from "./helpers.js"
-
 /**
  * Button inside of a context menu
  * @example
@@ -26,31 +23,6 @@ export class ContextMenuItemElement extends HTMLButtonElement {
 	constructor() {
 		super()
 		this.type = "button"
-		this.addEventListener("contextmenu", this.#triggerNormalClickOnRightClick)
-		this.addEventListener("click", this.#onClick)
-	}
-
-	/**
-	 * Gets called when the right mouse button is clicked
-	 * @ignore
-	 * @param {PointerEvent} event
-	 */
-	#triggerNormalClickOnRightClick(event) {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-		event.currentTarget.click()
-	}
-
-	/**
-	 * Gets called when the left mouse button is clicked
-	 * @ignore
-	 * @param {PointerEvent} event
-	 */
-	#onClick(event) {
-		findParentThat(
-			parent => parent instanceof ContextMenuElement,
-			event.currentTarget
-		)?.hide()
 	}
 }
 
