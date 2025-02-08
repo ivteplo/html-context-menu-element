@@ -4,12 +4,10 @@
 //
 
 import { ContextMenuElement } from "./context-menu.js"
-import { ContextMenuItemElement } from "./context-menu-item.js"
 import { ContextMenuGroupElement } from "./context-menu-group.js"
 
 export {
 	ContextMenuElement,
-	ContextMenuItemElement,
 	ContextMenuGroupElement
 }
 
@@ -18,15 +16,12 @@ export {
  * @example
  * import { defineElements } from "@ivteplo/html-context-menu-element"
  *
- * // will define <menu is="context-menu">,
- * //             <button is="context-menu-item">,
- * // 		      and <details is="context-menu-group">
+ * // will define <menu is="context-menu"> and <details is="context-menu-group">
  * defineElements()
  */
 export function defineElements() {
 	const baseName = "context-menu"
 	ContextMenuElement.defineAs(baseName)
-	ContextMenuItemElement.defineAs(`${baseName}-item`)
 	ContextMenuGroupElement.defineAs(`${baseName}-group`)
 }
 
