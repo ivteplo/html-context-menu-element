@@ -7,9 +7,9 @@ A context menu itself
 
 ```jsx
 <menu is="context-menu" id="my-context-menu">
-  <button is="context-menu-item">Cut</button>
-  <button is="context-menu-item">Copy</button>
-  <button is="context-menu-item">Paste</button>
+  <button type="button">Cut</button>
+  <button type="button">Copy</button>
+  <button type="button">Paste</button>
 </menu>
 ```
 
@@ -78,8 +78,8 @@ Element that represents buttons hidden under a dropdown in a context menu.
 <details is="context-menu-group">
     <summary>Group name</summary>
     <menu>
-        <button is="context-menu-item">Item 1</button>
-        <button is="context-menu-item">Item 2</button>
+        <button type="button">Item 1</button>
+        <button type="button">Item 2</button>
     </menu>
 </details>
 ```

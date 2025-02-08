@@ -11,8 +11,8 @@ import { getNextChildToFocusOnInsideOf } from "./helpers.js"
  * <details is="context-menu-group">
  *     <summary>Group name</summary>
  *     <menu>
- *         <button is="context-menu-item">Item 1</button>
- *         <button is="context-menu-item">Item 2</button>
+ *         <button type="button">Item 1</button>
+ *         <button type="button">Item 2</button>
  *     </menu>
  * </details>
  */

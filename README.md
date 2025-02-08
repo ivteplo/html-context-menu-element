@@ -32,8 +32,8 @@ defineElements()
 Then you can define your context menus in the HTML the following way:
 ```html
 <menu is="context-menu" id="my-context-menu">
-	<button is="context-menu-item">Button 1</button>
-	<button is="context-menu-item">Button 2</button>
+	<button type="button">Button 1</button>
+	<button type="button">Button 2</button>
 
 	<!-- Separators are added using <hr> -->
 	<hr>
@@ -43,8 +43,8 @@ Then you can define your context menus in the HTML the following way:
 		<!-- Label of the dropdown section -->
 		<summary>Dropdown</summary>
 		<menu>
-			<button is="context-menu-item">Child button 1</button>
-			<button is="context-menu-item">Child button 2</button>
+			<button type="button">Child button 1</button>
+			<button type="button">Child button 2</button>
 		</menu>
 	</details>
 </menu>

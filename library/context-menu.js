@@ -11,9 +11,9 @@ import "./context-menu.scss"
  * A context menu itself
  * @example <caption>Define a context menu</caption>
  * <menu is="context-menu" id="my-context-menu">
- *   <button is="context-menu-item">Cut</button>
- *   <button is="context-menu-item">Copy</button>
- *   <button is="context-menu-item">Paste</button>
+ *   <button type="button">Cut</button>
+ *   <button type="button">Copy</button>
+ *   <button type="button">Paste</button>
  * </menu>
  *
  * @example <caption>Apply the context menu to an element</caption>
