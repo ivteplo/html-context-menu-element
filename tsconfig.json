@@ -1,0 +1,10 @@
+{
+	"include": ["library/**/*.js"],
+	"compilerOptions": {
+		"allowJs": true,
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"moduleResolution": "node16",
+		"module": "Node16"
+	}
+}
