@@ -54,6 +54,11 @@ Object that has been right clicked on.
 Can be a child of a container that has the `data-context-menu` set.
 
 
+## `get open(): boolean`
+
+Check whether the context menu is open.
+
+
 ## `hide(): void`
 
 Hide the context menu

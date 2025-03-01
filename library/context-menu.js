@@ -3,9 +3,31 @@
 // Licensed under the Apache license 2.0
 //
 
-import { getNextChildToFocusOnInsideOf } from "./helpers.js"
+import { coordinateWithoutOverflow, getNextChildToFocusOnInsideOf, validatedTarget } from "./helpers.js"
 import { startObserver } from "./click-observer.js"
 import "./context-menu.scss"
+
+
+/**
+ * The following HTML element types (and their derivatives)
+ * are considered buttons of the context menu. Whenever they get clicked,
+ * the menu collapses (since the action is going to be executed).
+ */
+const contextMenuButtonTypes = [
+	HTMLButtonElement,
+	HTMLLinkElement
+]
+
+const contextMenuButtonSelector = "button, a"
+
+/**
+ * Checks parent elements too (in case the button has child elements).
+ * @param {HTMLElement} element
+ * @returns {boolean}
+ */
+const isContextMenuButton = (element) =>
+	contextMenuButtonTypes.some(Type => element instanceof Type)
+	|| (element instanceof HTMLElement && isContextMenuButton(element.parentElement))
 
 /**
  * A context menu itself
@@ -59,7 +81,7 @@ export class ContextMenuElement extends HTMLElement {
 
 	/**
 	 * Object with event listeners with `this`-bindings.
-	 * We need it, because binding `this` returns a new function,
+	 * We want it, because binding `this` returns a new function,
 	 * but we need to be able to remove an event listener
 	 */
 	#eventListeners
@@ -75,16 +97,14 @@ export class ContextMenuElement extends HTMLElement {
 		this.addEventListener("keydown", this.#eventListeners.onKeyDown)
 	}
 
-	/**
-	 * @ignore
-	 */
+	/** @ignore */
 	static get observedAttributes() {
 		return ["open"]
 	}
 
 	/**
 	 * @ignore
-	 * @param {string} name
+	 * @param {string} name — changed attribute’s name
 	 * @param {any} _oldValue
 	 * @param {any} newValue
 	 */
@@ -99,8 +119,14 @@ export class ContextMenuElement extends HTMLElement {
 	}
 
 	/**
-	 * Hide the context menu
+	 * Check whether the context menu is open.
+	 * @returns {boolean}
 	 */
+	get open() {
+		return this.hasAttribute("open")
+	}
+
+	/** Hide the context menu */
 	hide() {
 		this.removeAttribute("open")
 		this.style.top = ""
@@ -124,29 +150,17 @@ export class ContextMenuElement extends HTMLElement {
 			)
 		}
 
-		if (currentTarget instanceof HTMLElement) {
-			this.#currentTarget = currentTarget
-		}
-
-		if (target instanceof HTMLElement) {
-			this.#target = target
-		}
+		this.#currentTarget = validatedTarget(currentTarget)
+		this.#target = validatedTarget(target)
 
 		this.setAttribute("open", true)
 
-		if (y + this.clientHeight > window.innerHeight) {
-			this.style.top = `${y - this.clientHeight}px`
-		} else {
-			this.style.top = `${y}px`
-		}
+		const { width, height } = this.getBoundingClientRect()
 
-		if (x + this.clientWidth > window.innerWidth) {
-			this.style.left = `${x - this.clientWidth}px`
-		} else {
-			this.style.left = `${x}px`
-		}
+		this.style.top = coordinateWithoutOverflow(y, height, window.innerHeight) + "px"
+		this.style.left = coordinateWithoutOverflow(x, width, window.innerWidth) + "px"
 
-		this.querySelector("button")?.focus()
+		this.querySelector(contextMenuButtonSelector)?.focus()
 	}
 
 	/**
@@ -181,7 +195,7 @@ export class ContextMenuElement extends HTMLElement {
 
 		// Make the right click work like the left click
 		// when performing it on a button inside the context menu.
-		if (event.target instanceof HTMLButtonElement) {
+		if (isContextMenuButton(event.target)) {
 			event.target.click()
 		}
 	}
@@ -191,8 +205,8 @@ export class ContextMenuElement extends HTMLElement {
 	 * @param {PointerEvent} event
 	 */
 	#onClick(event) {
-		// By default we want to close the context menu once a button has been clicked.
-		if (!event.defaultPrevented && event.target instanceof HTMLButtonElement) {
+		// By default we want to close the context menu once a button/link has been clicked.
+		if (!event.defaultPrevented && isContextMenuButton(event.target)) {
 			this.hide()
 		}
 	}

@@ -31,9 +31,14 @@ export class ContextMenuGroupElement extends HTMLDetailsElement {
 	constructor() {
 		super()
 
+		// We don’t want the dropdown to close on click
+		this.addEventListener("click", event => event.preventDefault())
+
+		// We want the dropdown to open on hover
 		this.addEventListener("mouseover", () => { this.open = true })
-		this.addEventListener("keydown", this.#onKeyDown.bind(this))
 		this.addEventListener("mouseleave", () => { this.open = false })
+
+		this.addEventListener("keydown", this.#onKeyDown.bind(this))
 	}
 
 	#_buttonWrapper

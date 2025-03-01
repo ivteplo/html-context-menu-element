@@ -77,3 +77,24 @@ export function getNextChildToFocusOnInsideOf(parent, focusedElement, isTheOneAf
 	return nextToFocus
 }
 
+/**
+ * Returns the target if it’s an HTMLElement instance or null otherwise.
+ * @param {any} target
+ * @returns {HTMLElement|null}
+ */
+export function validatedTarget(target) {
+	return target instanceof HTMLElement ? target : null
+}
+
+/**
+ * Chooses the best coordinate so that the element doesn’t get past the screen.
+ * @param {number} clickCoordinate
+ * @param {number} elementWidth
+ * @param {number} screenWidth
+ * @returns {number}
+ */
+export function coordinateWithoutOverflow(clickCoordinate, elementWidth, screenWidth) {
+	return clickCoordinate + elementWidth > screenWidth
+		? clickCoordinate - elementWidth
+		: clickCoordinate
+}
