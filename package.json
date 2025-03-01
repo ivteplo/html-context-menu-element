@@ -3,7 +3,7 @@
   "description": "An HTML custom element, designed to let you quickly create an easily-customizable context menu.",
   "author": "Ivan Teplov <iteplov7@gmail.com>",
   "license": "Apache-2.0",
-  "version": "1.1.0-alpha.4",
+  "version": "1.1.0-alpha.5",
   "type": "module",
   "files": [
     "build",
