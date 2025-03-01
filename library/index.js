@@ -16,7 +16,7 @@ export {
  * @example
  * import { defineElements } from "@ivteplo/html-context-menu-element"
  *
- * // will define <menu is="context-menu"> and <details is="context-menu-group">
+ * // will define <context-menu /> and <details is="context-menu-group" />
  * defineElements()
  */
 export function defineElements() {

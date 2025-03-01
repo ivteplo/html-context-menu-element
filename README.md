@@ -31,7 +31,7 @@ defineElements()
 
 Then you can define your context menus in the HTML the following way:
 ```html
-<menu is="context-menu" id="my-context-menu">
+<context-menu id="my-context-menu">
 	<button type="button">Button 1</button>
 	<button type="button">Button 2</button>
 
@@ -47,7 +47,7 @@ Then you can define your context menus in the HTML the following way:
 			<button type="button">Child button 2</button>
 		</menu>
 	</details>
-</menu>
+</context-menu>
 ```
 
 Now, if you want to apply the context menu to an element,

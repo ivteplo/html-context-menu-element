@@ -6,11 +6,11 @@ A context menu itself
 <summary><b>Example:</b> Define a context menu</summary>
 
 ```jsx
-<menu is="context-menu" id="my-context-menu">
+<context-menu id="my-context-menu">
   <button type="button">Cut</button>
   <button type="button">Copy</button>
   <button type="button">Paste</button>
-</menu>
+</context-menu>
 ```
 
 </details>
@@ -113,7 +113,7 @@ Helper method to define all required components in the HTML custom element regis
 ```jsx
 import { defineElements } from "@ivteplo/html-context-menu-element"
 
-// will define <menu is="context-menu"> and <details is="context-menu-group">
+// will define <context-menu /> and <details is="context-menu-group" />
 defineElements()
 ```
 

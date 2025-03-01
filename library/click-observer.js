@@ -95,7 +95,7 @@ function openContextMenuOnClick(event) {
  * @param {PointerEvent} event
  */
 function onMenuCollapsingEvent(event) {
-	const openMenu = document.querySelector("menu[is=context-menu][open]")
+	const openMenu = document.querySelector("context-menu[open]")
 
 	if (openMenu && (event.type !== "mousedown" || !openMenu.contains(event.target))) {
 		openMenu.hide()

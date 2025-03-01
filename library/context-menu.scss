@@ -3,7 +3,7 @@
  * Licensed under the Apache license 2.0
  */
 
-menu[is=context-menu] {
+context-menu {
 	--divider-color: #dadce0;
 	--border: 0.0625rem solid var(--divider-color);
 
@@ -78,7 +78,7 @@ menu[is=context-menu] {
 	background-color: var(--focused-item-background-color);
 }
 
-menu[is=context-menu] {
+context-menu {
 	@include menu();
 	position: fixed;
 

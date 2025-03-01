@@ -10,18 +10,18 @@ import "./context-menu.scss"
 /**
  * A context menu itself
  * @example <caption>Define a context menu</caption>
- * <menu is="context-menu" id="my-context-menu">
+ * <context-menu id="my-context-menu">
  *   <button type="button">Cut</button>
  *   <button type="button">Copy</button>
  *   <button type="button">Paste</button>
- * </menu>
+ * </context-menu>
  *
  * @example <caption>Apply the context menu to an element</caption>
  * <div data-context-menu="my-context-menu">
  *   This element is using a custom context menu.
  * </div>
  */
-export class ContextMenuElement extends HTMLMenuElement {
+export class ContextMenuElement extends HTMLElement {
 	/**
 	 * Function to define the context menu element in the HTML Custom Element Registry
 	 * @param {string} tag - the tag name for the context menu element
@@ -30,7 +30,7 @@ export class ContextMenuElement extends HTMLMenuElement {
 	 * ContextMenuElement.defineAs("context-menu")
 	 */
 	static defineAs(tag) {
-		customElements.define(tag, this, { extends: "menu" })
+		customElements.define(tag, this)
 	}
 
 	/** @type {HTMLElement | null} */
